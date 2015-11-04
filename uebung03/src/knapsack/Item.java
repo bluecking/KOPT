@@ -65,6 +65,6 @@ public class Item implements Comparable{
 	
 	@Override
 	public String toString() {
-		return "Itemvalue: " + c + ", Itemweight: " + w + " |" + n;
+		return "Itemvalue: " + c + ", Itemweight: " + w + " |" + efficiency;
 	}
 }

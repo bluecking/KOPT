@@ -6,11 +6,14 @@ import java.lang.*;
 
 public class Solver implements SolverInterface {
 	private int weight_limit = 0;
+	private int best_value = 0;
+	private Item[] best_solution;
 	
     @Override
     public Solution solve(Instance instance) {
     	Item[] item_list = new Item[instance.getSize()];
     	weight_limit = instance.getWeightLimit();
+    	best_solution = new Item[instance.getSize()];
     	
     	for(int i = 0; i < instance.getSize(); i++) {
     		item_list[i] = new Item(instance.getValue(i), instance.getWeight(i), i);
@@ -19,6 +22,10 @@ public class Solver implements SolverInterface {
     	Arrays.sort(item_list, Collections.reverseOrder());
     	
         Solution solution = new Solution(instance);
+        
+        for(Item e:item_list) {
+        	//System.out.println(e);
+        }
         
         item_list = branchAndBound(item_list, 0);
         
@@ -34,66 +41,73 @@ public class Solver implements SolverInterface {
     private Item[] branchAndBound(Item[] list, int index) {
     	int value = 0;
     	int restweight = weight_limit;
+    	int ub_calc_restweight = weight_limit;
     	double ub_curr_node = 0.0;
-    	double ub_left_node = 0.0; // 1 Item
-    	double ub_right_node = 0.0; // 0 Item
+    	
     	Item[] item_list = list;
-    	Item[] list_l = new Item[list.length];
-    	Item[] list_r = new Item[list.length];
     	
-    	for(int i = 0; i < list.length; i++) {
-    		list_l[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(),
-    				item_list[i].getN());
-    		list_r[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(),
-    				item_list[i].getN());
-    	}
-    	
-    	int list_l_value = 0;
-    	int list_r_value = 0;
-    	
-    	list_l[index].setAmount(1);
-    	
-    	for(Item e: item_list) {
-    		if(e.getAmount() == 1) {
-    			value += e.getValue();
-    			restweight -=e.getWeight();
+    	for(int i = 0; i < index; i++) {
+    		if(item_list[i].getAmount() == 1) {
+    			value += item_list[i].getValue();
+    			restweight -= item_list[i].getWeight();
+    			ub_calc_restweight -= item_list[i].getWeight();
     		}
     	}
     	
-    	ub_curr_node = (double)value + item_list[index].getEfficiency() * restweight;
+    	ub_curr_node = (double)value;
     	
-    	
-    	if(index + 1 < list.length) {
-    		ub_left_node = (double)value + item_list[index].getValue() +
-        			item_list[index+1].getEfficiency() * restweight;
-        	ub_right_node = (double)value + item_list[index+1].getEfficiency() * restweight;
+    	for(int i = index; i < list.length; i++) {
+    		if(item_list[i].getWeight() > ub_calc_restweight) {
+    			ub_curr_node += (double)ub_calc_restweight * item_list[i].getEfficiency();
+    			ub_calc_restweight = 0;
+    		}else{
+    			ub_curr_node += item_list[i].getValue();
+    			ub_calc_restweight -= item_list[i].getWeight();
+    		}
     	}
     	
-    	if((double)value < ub_left_node && index + 1 < list.length) {
+    	if(value > best_value) {
+    		best_value = value;
+    		best_solution = item_list;
+    	}
+    	
+    	Item[] list_l = new Item[list.length]; //1
+    	Item[] list_r = new Item[list.length]; //0
+    	
+    	for(int i = 0; i < list.length; i++) {
+    		list_l[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(), 
+    				item_list[i].getN());
+    		list_r[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(), 
+    				item_list[i].getN());
+    	}
+    	
+    	if((double)best_value < ub_curr_node) {
+    		list_l[index].setAmount(1);
     		list_l = branchAndBound(list_l, index + 1);
-    	}
-    	
-    	if((double)value < ub_right_node && index + 1 < list.length) {
     		list_r = branchAndBound(list_r, index + 1);
     	}
     	
-    	for(Item a: list_l) {
-    		if(a.getAmount() == 1) {
-    			list_l_value += a.getValue();
+    	if((double)value == ub_curr_node) {
+    		return item_list;
+    	}
+    	
+    	int value_l = 0;
+    	int value_r = 0;
+    	
+    	for(int i = 0; i < list.length; i++) {
+    		if(item_list[i].getAmount() == 1) {
+    			value_l += item_list[i].getValue();
+    			value_r += item_list[i].getValue();
     		}
     	}
     	
-    	for(Item b: list_r) {
-    		if(b.getAmount() == 1) {
-    			list_r_value += b.getValue();
-    		}
-    	}
-    	
-    	if(list_l_value > list_r_value) {
+    	if(value_l > value_r && value_l > value) {
     		return list_l;
-    	}else{
+    	}else if(value_r > value) {
     		return list_r;
-    	} 
+    	}else{
+    		return item_list;
+    	}
     }
 
     private void incrementInstance(Solution solution) {
