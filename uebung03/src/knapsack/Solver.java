@@ -7,32 +7,28 @@ import java.lang.*;
 public class Solver implements SolverInterface {
     @Override
     public Solution solve(Instance instance) {
-    	Instance sorted_instance = sortByEfficiency(instance);
+    	Item[] item_list = new Item[instance.getSize()];
+    	double upper_bound = 0.0;
+    	int n = instance.getWeightLimit();
+    	
+    	for(int i = 0; i < instance.getSize(); i++) {
+    		item_list[i] = new Item(instance.getValue(i), instance.getWeight(i), i);
+    	}
+    	
+    	Arrays.sort(item_list, Collections.reverseOrder());
+    	
         Solution solution = new Solution(instance);
-        Solution optSolution = new Solution(instance);
-        double upper_bound = 0.0;
+        
+        branchAndBound(item_list);
+        
+        for(Item e: item_list) {
+        	
+        }
         
         return solution;
     }
     
-    private Instance sortByEfficiency(Instance instance) {
-    	Instance sorted_instance = new Instance(instance.getSize());
-    	
-    	double[] efficiency = new double[instance.getSize()];
-    	
-    	for(int i = 0; i<instance.getSize(); i++) {
-    		efficiency[i] = (double) instance.getValue(i)/instance.getWeight(i);
-    	}
-    	
-    	Arrays.sort(efficiency);
-    	
-    	for(int i = 0; i < efficiency.length / 2; i++) {
-    	    double temp = efficiency[i];
-    	    efficiency[i] = efficiency[efficiency.length - i - 1];
-    	    efficiency[efficiency.length - i - 1] = temp;
-    	}
-    	
-    	return sorted_instance;
+    private void branchAndBound(Item[] item_list) {
     }
 
     private void incrementInstance(Solution solution) {
