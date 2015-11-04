@@ -1,5 +1,7 @@
 package knapsack;
 
+import java.util.*;
+
 public class Item implements Comparable{
 	private int c;
 	private int w;
@@ -25,6 +27,14 @@ public class Item implements Comparable{
 		this.w = w;
 		this.efficiency = (double) c/w;
 		this.n = n;
+	}
+	
+	public Item(int c, int w, int n, int amount) {
+		this.c = c;
+		this.w = w;
+		this.efficiency = (double) c/w;
+		this.n = n;
+		this.amount = amount;
 	}
 	
 	public int getN() {
@@ -61,6 +71,14 @@ public class Item implements Comparable{
 		} else {
 			return -1;
 		}
+	}
+	
+	public static Comparator<Item> ratio() {
+		return new Comparator<Item>() {
+			public int compare(Item i1, Item i2) {
+				return Double.compare(i2.efficiency, i1.efficiency);
+			}
+		};
 	}
 	
 	@Override
