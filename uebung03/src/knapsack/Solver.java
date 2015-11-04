@@ -5,11 +5,12 @@ import java.util.Collections;
 import java.lang.*;
 
 public class Solver implements SolverInterface {
+	private int weight_limit = 0;
+	
     @Override
     public Solution solve(Instance instance) {
     	Item[] item_list = new Item[instance.getSize()];
-    	double upper_bound = 0.0;
-    	int n = instance.getWeightLimit();
+    	weight_limit = instance.getWeightLimit();
     	
     	for(int i = 0; i < instance.getSize(); i++) {
     		item_list[i] = new Item(instance.getValue(i), instance.getWeight(i), i);
@@ -19,16 +20,80 @@ public class Solver implements SolverInterface {
     	
         Solution solution = new Solution(instance);
         
-        branchAndBound(item_list);
+        item_list = branchAndBound(item_list, 0);
         
         for(Item e: item_list) {
-        	
+        	if(e.getAmount() == 1) {
+        		solution.set(e.getN(), 1);;
+        	}
         }
         
         return solution;
     }
     
-    private void branchAndBound(Item[] item_list) {
+    private Item[] branchAndBound(Item[] list, int index) {
+    	int value = 0;
+    	int restweight = weight_limit;
+    	double ub_curr_node = 0.0;
+    	double ub_left_node = 0.0; // 1 Item
+    	double ub_right_node = 0.0; // 0 Item
+    	Item[] item_list = list;
+    	Item[] list_l = new Item[list.length];
+    	Item[] list_r = new Item[list.length];
+    	
+    	for(int i = 0; i < list.length; i++) {
+    		list_l[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(),
+    				item_list[i].getN());
+    		list_r[i] = new Item(item_list[i].getValue(), item_list[i].getWeight(),
+    				item_list[i].getN());
+    	}
+    	
+    	int list_l_value = 0;
+    	int list_r_value = 0;
+    	
+    	list_l[index].setAmount(1);
+    	
+    	for(Item e: item_list) {
+    		if(e.getAmount() == 1) {
+    			value += e.getValue();
+    			restweight -=e.getWeight();
+    		}
+    	}
+    	
+    	ub_curr_node = (double)value + item_list[index].getEfficiency() * restweight;
+    	
+    	
+    	if(index + 1 < list.length) {
+    		ub_left_node = (double)value + item_list[index].getValue() +
+        			item_list[index+1].getEfficiency() * restweight;
+        	ub_right_node = (double)value + item_list[index+1].getEfficiency() * restweight;
+    	}
+    	
+    	if((double)value < ub_left_node && index + 1 < list.length) {
+    		list_l = branchAndBound(list_l, index + 1);
+    	}
+    	
+    	if((double)value < ub_right_node && index + 1 < list.length) {
+    		list_r = branchAndBound(list_r, index + 1);
+    	}
+    	
+    	for(Item a: list_l) {
+    		if(a.getAmount() == 1) {
+    			list_l_value += a.getValue();
+    		}
+    	}
+    	
+    	for(Item b: list_r) {
+    		if(b.getAmount() == 1) {
+    			list_r_value += b.getValue();
+    		}
+    	}
+    	
+    	if(list_l_value > list_r_value) {
+    		return list_l;
+    	}else{
+    		return list_r;
+    	} 
     }
 
     private void incrementInstance(Solution solution) {

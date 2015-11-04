@@ -4,8 +4,15 @@ public class Item implements Comparable{
 	private int c;
 	private int w;
 	private double efficiency;
-	private int n;
+	private int n; // position of Item in Instance
 	private int amount = 0;
+	
+	public Item() {
+		c = 0;
+		w = 0;
+		efficiency = 0;
+		n = 0;
+	}
 	
 	public Item(int c, int w) {
 		this.c = c;
