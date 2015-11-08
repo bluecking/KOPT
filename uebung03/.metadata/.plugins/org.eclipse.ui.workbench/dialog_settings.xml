@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.internal.QuickAccess">
-		<item value="-1" key="dialogWidth"/>
-		<item value="-1" key="dialogHeight"/>
-		<list key="orderedProviders">
+		<item value="-1" item="dialogWidth"/>
+		<item value="-1" item="dialogHeight"/>
+		<list item="orderedProviders">
 		</list>
-		<list key="textArray">
+		<list item="textArray">
 		</list>
-		<list key="orderedElements">
+		<list item="orderedElements">
 		</list>
-		<list key="textEntries">
+		<list item="textEntries">
 		</list>
 	</section>
 	<section name="ImportExportAction">
