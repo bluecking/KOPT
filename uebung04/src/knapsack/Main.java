@@ -20,7 +20,7 @@ public class Main {
 		if (args.length == 1) {
 			Instance instance = Reader.readInstance(args[0]);
 			System.out.println(args[0].toString());
-			runSolver(new Solver(instance), instance);
+			runSolver(new Solver(), instance);
 		} else {
 			throw new IllegalArgumentException("Need filename as argument.");
 		}
