@@ -19,8 +19,16 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		if (args.length == 1) {
 			Instance instance = Reader.readInstance(args[0]);
-			System.out.println(args[0].toString());
-			runSolver(new Solver(), instance);
+			System.out.println(args[0]);
+
+			runSolver(new Solver(0), instance);
+			System.out.println();
+			runSolver(new Solver(1), instance);
+			System.out.println();
+			runSolver(new Solver(2), instance);
+			System.out.println();
+			runSolver(new Solver(3), instance);
+
 		} else {
 			throw new IllegalArgumentException("Need filename as argument.");
 		}

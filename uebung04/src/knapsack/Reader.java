@@ -1,7 +1,8 @@
 package knapsack;
 
-import java.io.*;
-import knapsack.Instance;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * A reader for instance files for knapsack problems
