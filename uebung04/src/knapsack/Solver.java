@@ -8,7 +8,7 @@ public class Solver implements SolverInterface {
     private int weight_limit = 0;
     private int best_value = 0;
     private Item[] best_solution;
-    private Random rand = new Random(1);
+    private Random rand = new Random(10);
 
     private int method;
 
@@ -18,11 +18,11 @@ public class Solver implements SolverInterface {
 
     @Override
     public Solution solve(Instance instance) {
-        int iteration = 100;
+        int iteration = 1000;
 
 //        Solution start = findStartSolutionByEfficiency(instance);
         Solution start = findStartSolutionByRandom(instance);
-//        Solution start = new Solution(instance);
+       // Solution start = new Solution(instance);
 
         switch(this.method) {
             case 1:
@@ -35,7 +35,12 @@ public class Solver implements SolverInterface {
 
         return start;
     }
-
+    
+    /*
+     * Uses an instance to determine a 'random' starting solution by
+     * 'randomly' filling the knapsack with objects until the next object
+     * causes an overflow.
+     */
     private Solution findStartSolutionByRandom(Instance instance) {
         Solution solution = new Solution(instance);
         while(true) {
@@ -50,27 +55,34 @@ public class Solver implements SolverInterface {
 
         return solution;
     }
-
+    
+    /*
+     * Uses a neighbourhood that flips a single bit per iteration and compares it with the
+     * current solution.
+     */
     private Solution heuristik1(int iterations, Solution solution) {
-
-        Solution bestSolution = new Solution(solution);
-
+    	Solution bestSolution = new Solution(solution);
+    	ArrayList<Solution> list = new ArrayList<Solution>();
+    	
         for (int j = 0; j < iterations; j++) {
+        	list.clear();
             for (int i = 0; i < solution.getSize(); i++) {
-                flipSolution(i, solution);
+                flipSolution(i, bestSolution);
 
-                if (!solution.isFeasible()) {
-                    flipSolution(i, solution);
+                if (!bestSolution.isFeasible()) {
+                    flipSolution(i, bestSolution);
                 } else {
-                    if (solution.getValue() > bestSolution.getValue()) {
-                        bestSolution = new Solution(solution);
-                    } else {
-                        flipSolution(i, solution);
-                    }
+                	list.add(new Solution(bestSolution));
+                	flipSolution(i, bestSolution);
                 }
             }
+            for(Solution sol : list) {
+            	if(sol.getValue() > bestSolution.getValue()) {
+            		bestSolution = new Solution(sol);
+            	}
+            }
         }
-
+	        
         return bestSolution;
     }
 
@@ -117,7 +129,11 @@ public class Solver implements SolverInterface {
 
         return bestSolution;
     }
-
+    
+    /*
+     * Uses an instance to sort its content by efficiency and 
+     * fill the knapsack until the next element would cause the knapsack to overflow.
+     */
     private Solution findStartSolutionByEfficiency(Instance instance) {
         Solution sol = new Solution(instance);
         ArrayList<Pair> listSortedByEfficiency = new ArrayList<>();
@@ -142,7 +158,12 @@ public class Solver implements SolverInterface {
 
         return sol;
     }
-
+    
+    /*
+     * Flips a single byte in a @Solution object
+     * @param i	Determines the position of the byte that will be flipped
+     * @param solution object that will be manipulated
+     */
     private void flipSolution(int i, Solution solution) {
         if (solution.get(i) == 1)
             solution.set(i, 0);
