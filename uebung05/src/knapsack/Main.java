@@ -21,13 +21,8 @@ public class Main {
 			Instance instance = Reader.readInstance(args[0]);
 			System.out.println(args[0]);
 
-			runSolver(new Solver(0), instance);
+			runSolver(new Solver(), instance);
 			System.out.println();
-			runSolver(new Solver(1), instance);
-			System.out.println();
-			runSolver(new Solver(2), instance);
-			System.out.println();
-			runSolver(new Solver(3), instance);
 
 		} else {
 			throw new IllegalArgumentException("Need filename as argument.");
