@@ -1,8 +1,5 @@
 package knapsack2;
 
-/**
- * O(nW)
- */
 public class Solver implements SolverInterface {
     private int[][] table;
     private Instance instance;
@@ -11,8 +8,8 @@ public class Solver implements SolverInterface {
     public Solution solve(Instance instance) {
         int W = instance.getWeightLimit();
         int n = instance.getSize();
-
         this.instance = instance;
+
         /* Initialize table with -1 */
         table = new int[n][W + 1];
 
@@ -22,57 +19,49 @@ public class Solver implements SolverInterface {
             }
         }
 
-        int bestValue = calculate(0, W);
+        int bestValue = calculate(n - 1, W);
 
         return backtrack(bestValue);
     }
 
-    public int calculate(int item, int currentVolume) {
-        if (item >= instance.getSize()) {
+    protected int calculate(int item, int currentWeight) {
+        if (item < 0) {
             return 0;
         }
 
         int itemWeight = instance.getWeight(item);
         int itemValue = instance.getValue(item);
 
-        if (table[item][currentVolume] != -1)
-            return table[item][currentVolume];
+        if (table[item][currentWeight] != -1)
+            return table[item][currentWeight];
 
-        int withOutCurrentItem = calculate(item + 1, currentVolume);
+        int withOutCurrentItem = calculate(item - 1, currentWeight);
         int withCurrentItem = 0;
 
-        if (currentVolume - itemWeight >= 0) {
-            withCurrentItem = itemValue + calculate(item + 1, currentVolume - itemWeight);
+        if (currentWeight - itemWeight >= 0) {
+            withCurrentItem = itemValue + calculate(item - 1, currentWeight - itemWeight);
         }
 
-        table[item][currentVolume] = Math.max(withOutCurrentItem, withCurrentItem);
+        table[item][currentWeight] = Math.max(withOutCurrentItem, withCurrentItem);
 
-        return table[item][currentVolume];
+        return table[item][currentWeight];
     }
 
-    public Solution backtrack(int bestValue) {
+    protected Solution backtrack(int bestValue) {
         Solution s = new Solution(instance);
         int n = instance.getSize();
         int W = instance.getWeightLimit();
-        int currentVolume = -1;
 
-        for (int j = 0; (j <= W) && (currentVolume == -1); j++) {
-            if (table[0][j] == bestValue)
-                currentVolume = j;
-        }
-
-        for (int i = 0; i < n - 1; i++) {
-            int weight = instance.getWeight(i);
-
-            if (currentVolume - instance.getWeight(i) >= 0 && table[i + 1][currentVolume - instance.getWeight(i)] == bestValue - instance.getValue(i)) {
+        for (int i = n - 1; 0 < i; i--) {
+            if (W - instance.getWeight(i) >= 0 && table[i - 1][W - instance.getWeight(i)] == bestValue - instance.getValue(i)) {
                 s.set(i, 1);
                 bestValue -= instance.getValue(i);
-                currentVolume -= instance.getWeight(i);
+                W -= instance.getWeight(i);
             }
         }
 
         if (bestValue > 0)
-            s.set(n - 1, 1);
+            s.set(0, 1);
 
         return s;
     }
