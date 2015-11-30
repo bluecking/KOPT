@@ -6,21 +6,21 @@ public class Solver implements SolverInterface {
     private Solution currentSolution;
 
     private double[] t;
-    private static final int ITERATIONS = 20000;
+    private static final int ITERATIONS = 200;
 
     public Solver() {
         random = new Random();
         random.setSeed(new Date().getTime());
         t = new double[ITERATIONS];
 
-//        Temperature.setTemperatureByAlpha(ITERATIONS, 0.8, t);
-        Temperature.setConstantTemperature(100, t);
+        Temperature.setTemperatureByAlpha(ITERATIONS, 0.9, t);
+    //    Temperature.setConstantTemperature(100, t);
     }
 
     @Override
     public Solution solve(Instance instance) {
-        currentSolution = initialSolution(instance);
-//        currentSolution = new Solution(instance);
+        //currentSolution = initialSolution(instance);
+    	currentSolution = new Solution(instance);
         bestSolution = new Solution(currentSolution);
 
         for (int i = 0; i < ITERATIONS; i++) {
