@@ -8,48 +8,65 @@ public class Solver implements SolverInterface {
         this.instance = instance;
 
 //        return method1();
-        return method2();
+//        return method2();
 //        return method3();
+        return null;
     }
 
     // Flip, Greedy, statisch, nach iterationen, position
-    private Solution method1(int iterations) {
-        Solution solution = new Solution(instance);
-        Solution bestSolution = new Solution(solution);
+    private Solution method1(int iterations, int maxListSize) {
+        Solution currentSolution = new Solution(instance);
+        Solution bestSolution = new Solution(currentSolution);
         ArrayList<Integer> list = new ArrayList<>();
 
         for (int i = 0; i < iterations; i++) {
             Solution bestNeighbour = new Solution(instance);
             int pos = -1;
 
-            for (int j = 0; j < solution.getSize(); j++) {
+            // Find the best neighbour
+            for (int j = 0; j < currentSolution.getSize(); j++) {
+                // Tabu criteria
                 if (list.contains(j)) {
                     continue;
                 }
 
-                flip(j, solution);
-                if (solution.isFeasible() && solution.getValue() > bestNeighbour.getValue()) {
+                flip(j, currentSolution);
+
+                if (currentSolution.isFeasible() && currentSolution.getValue() > bestNeighbour.getValue()) {
                     pos = j;
-                    bestNeighbour = new Solution(solution);
+                    bestNeighbour = new Solution(currentSolution);
                 }
-                flip(j, solution);
+
+                flip(j, currentSolution);
+            }
+
+            if(list.size() == maxListSize) {
+                list.remove(list.size() - 1);
             }
 
             list.add(pos);
-            solution = new Solution(bestNeighbour);
-            if (solution.getValue() > bestSolution.getValue())
-                bestSolution = new Solution(solution);
+            currentSolution = new Solution(bestNeighbour);
+
+            if (currentSolution.getValue() > bestSolution.getValue()) {
+                bestSolution = new Solution(currentSolution);
+            }
         }
 
         return bestSolution;
     }
 
     private Solution method2() {
-        return null;
+
     }
 
-    private Solution method3() {
-        return null;
+    private Solution method3(int iterations) {
+        Solution bestSolution = new Solution(instance);
+        int listSize;
+
+        for (int i = 0; i < iterations; i++) {
+
+        }
+        return bestSolution;
     }
 
     /**
