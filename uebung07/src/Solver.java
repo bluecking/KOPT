@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.*;
 
 public class Solver implements SolverInterface {
 
@@ -43,13 +43,71 @@ public class Solver implements SolverInterface {
 
         return bestSolution;
     }
-
+    
+    /**
+     * API, random starting solution, dynamic tabulist, long term memory,
+     * breaks when there are no neighbours available anymore.
+     * jumps back to best value after @max_iterations iterations that don't yield
+     * a higher valued solution
+     * @return feasible Solution with heuristic highest value
+     */
     private Solution method2() {
-        return null;
+    	final int max_iterations = 5;
+    	int iteration = 0;
+    	ArrayList<int[]> tabuList = new ArrayList<int[]>();
+    	
+    	Solution curr = findStartSolutionByRandom(instance);
+    	Solution best = new Solution(curr);
+    	ArrayList<Solution> legitNeighbours = legitApiNeighbours(curr);
+    	
+    	do {
+    		Solution tmp = new Solution(instance);
+    		for(Solution s : legitNeighbours) {
+    			if(s.getValue() > tmp.getValue()) {
+    				tmp = new Solution(s);
+    			}
+    		}
+    		curr = new Solution(tmp);
+    		if(curr.getValue() > best.getValue()) {
+    			iteration = 0;
+    			best = new Solution(curr);
+    		} else {
+    			iteration++;
+    			if(iteration > max_iterations) {
+    				curr = new Solution(best);
+    			}
+    		}
+    		
+    		legitNeighbours = legitApiNeighbours(curr);
+    	} while(!legitNeighbours.isEmpty());
+        return best;
     }
 
     private Solution method3() {
         return null;
+    }
+    
+    /**
+     * Calculates all neighbours found by using API on Solution object.
+     * Ignores neighbours that would create a conflict with tabulist
+     * @param sol starting Solution object
+     * @return list containing all feasible neighbours
+     */
+    private ArrayList<Solution> legitApiNeighbours(Solution sol) {
+    	ArrayList<Solution> list = new ArrayList<Solution>();
+    	
+    	for(int i = 0; i < sol.getSize() - 1; i++) {
+    		api(i, sol);
+    		if(sol.isFeasible()) {
+    			list.add(new Solution(sol));			
+    		}
+    		api(i, sol);
+    	}
+    	return list;
+    }
+    
+    private ArrayList<Solution> nonLegitApiNeighbours(Solution sol) {
+    	return null;
     }
 
     /**
@@ -119,4 +177,25 @@ public class Solver implements SolverInterface {
             solution.set(pos + 1, tmp);
         }
     }
+    
+	/**
+	 * Uses an instance to determine a 'random' starting solution by 'randomly'
+	 * filling the knapsack with objects until the next object causes an
+	 * overflow.
+	 */
+	private Solution findStartSolutionByRandom(Instance instance) {
+		Random rand = new Random(10);
+		Solution solution = new Solution(instance);
+		while (true) {
+			int randPos = rand.nextInt(solution.getSize() - 1);
+			solution.set(randPos, 1);
+
+			if (!solution.isFeasible()) {
+				solution.set(randPos, 0);
+				break;
+			}
+		}
+
+		return solution;
+	}
 }
