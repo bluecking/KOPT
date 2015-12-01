@@ -14,7 +14,7 @@ public class Solver implements SolverInterface {
             incrementInstance(solution);
 
             if (solution.isFeasible()) {
-                System.out.println("+++ " + solution);
+//                System.out.println("+++ " + solution);
 
                 /**
                  * If the value of the current solution is better than the saved solution,
@@ -24,7 +24,7 @@ public class Solver implements SolverInterface {
                     copySolution(solution, optSolution);
                 }
             } else {
-                System.out.println("--- " + solution);
+//                System.out.println("--- " + solution);
             }
         }
 

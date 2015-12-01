@@ -107,7 +107,7 @@ public class Solver implements SolverInterface {
 	 */
 	private Solution heuristik2(int iterations, Solution solution) {
 		Solution bestSolution = new Solution(solution);
-		ArrayList<Solution> list = new ArrayList<Solution>();
+		ArrayList<Solution> list = new ArrayList<>();
 
 		for (int j = 0; j < iterations; j++) {
 			list.clear();

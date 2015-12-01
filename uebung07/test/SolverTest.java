@@ -1,7 +1,6 @@
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import knapsack.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -24,20 +23,20 @@ public class SolverTest {
     
     @Before
     public void setUp() throws Exception {
-        instance10 = Reader.readInstance("rucksack0010.txt");
-        instance15 = Reader.readInstance("rucksack0015.txt");
-        instance20a = Reader.readInstance("rucksack0020a.txt");
-        instance20b = Reader.readInstance("rucksack0020b.txt");
-        instance30 = Reader.readInstance("rucksack0030.txt");
-        instance40 = Reader.readInstance("rucksack0040.txt");
-        instance50 = Reader.readInstance("rucksack0050.txt");
-        instance60 = Reader.readInstance("rucksack0060.txt");
-        instance100a = Reader.readInstance("rucksack0100a.txt");
-        instance100b = Reader.readInstance("rucksack0100b.txt");
-        instance500 = Reader.readInstance("rucksack0500.txt");
-        instance1000 = Reader.readInstance("rucksack1000.txt");
-        instance5000a = Reader.readInstance("rucksack5000a.txt");
-        instance5000b = Reader.readInstance("rucksack5000b.txt");
+        instance10 = Reader.readInstance("instances/rucksack0010.txt");
+        instance15 = Reader.readInstance("instances/rucksack0015.txt");
+        instance20a = Reader.readInstance("instances/rucksack0020a.txt");
+        instance20b = Reader.readInstance("instances/rucksack0020b.txt");
+        instance30 = Reader.readInstance("instances/rucksack0030.txt");
+        instance40 = Reader.readInstance("instances/rucksack0040.txt");
+        instance50 = Reader.readInstance("instances/rucksack0050.txt");
+        instance60 = Reader.readInstance("instances/rucksack0060.txt");
+        instance100a = Reader.readInstance("instances/rucksack0100a.txt");
+        instance100b = Reader.readInstance("instances/rucksack0100b.txt");
+        instance500 = Reader.readInstance("instances/rucksack0500.txt");
+        instance1000 = Reader.readInstance("instances/rucksack1000.txt");
+        instance5000a = Reader.readInstance("instances/rucksack5000a.txt");
+        instance5000b = Reader.readInstance("instances/rucksack5000b.txt");
     }
 
     @After
