@@ -10,7 +10,8 @@ public class Solver implements SolverInterface {
 
 //        return method1();
 //        return method2();
-        return method3();
+//        return method3();
+        return method4();
     }
 
     // Flip, Greedy, statisch, nach iterationen, position
@@ -175,6 +176,118 @@ public class Solver implements SolverInterface {
     }
     
     /**
+     * flip neighbourhood, random startsolution, dynamic tabulist, long term memory
+     * Tabulist consists of Solution objects, whose solution array is checked against
+     * neighbouring solution arrays.
+     * e.g : 1 0 0 0 1 with Solution.value = 10 is unequal to
+     * 		 0 0 1 0 0 with Solution.value = 10
+     * @return
+     */
+    private Solution method4() {
+    	Solution curr = findStartSolutionByRandom(instance);
+    	Solution best = new Solution(curr);
+    	
+    	
+    	Status stat = Status.FEASIBLE;
+    	ArrayList<Solution> tabuList = new ArrayList<Solution>();
+    	ArrayList<Solution> neighbours = new ArrayList<Solution>();
+    	tabuList.add(new Solution(curr));
+
+    	int iteration = 0;
+    	
+    	while(true) {
+    		Solution tmp = new Solution(instance);
+    		if(stat == Status.FEASIBLE) {
+    			stat = Status.NON_FEASIBLE;
+    			for(int i = 0; i < tmp.getSize(); i++){
+    				tmp.set(i, 1);
+    			}
+    		} else {
+    			stat = Status.FEASIBLE;
+    		}
+    		neighbours = new ArrayList<Solution>(flipNeighbours(curr, stat));
+    		
+    			
+    		for(Solution s : neighbours) {
+    			if(stat == Status.FEASIBLE) {
+    				if(s.getValue() > tmp.getValue()) {
+    					boolean existsInList = false;
+    					for(Solution sol : tabuList) {
+    						if(compareSolution(s, sol)) {
+    							existsInList = true;
+    							break;
+    						}
+    					}
+    					if(!existsInList) {
+    						tmp = new Solution(s);
+    					}
+    				}
+    			} else {
+    				if(s.getValue() < tmp.getValue()) {
+    					boolean existsInList = false;
+    					for(Solution sol : tabuList) {
+    						if(compareSolution(s, sol)) {
+    							existsInList = true;
+    							break;
+    						}
+    					}
+    					if(!existsInList) {
+    						tmp = new Solution(s);
+    					}
+    				}
+    			}
+    		}
+    		if(tmp.getValue() == 0) {
+    			break;
+    		}
+    		tabuList.add(new Solution(tmp));
+    		curr = new Solution(tmp);
+    		if(curr.isFeasible()) {
+    			best = new Solution(curr);
+    		}
+    	}
+    	
+    	
+    	
+    	return best;
+    }
+    
+    private int calculateDistance() {
+    	Solution full = new Solution(instance);
+    	for(int i = 0; i < instance.getSize(); i++) {
+    		full.set(i, 1);
+    	}
+    	return full.getValue();
+    }
+    
+    /**
+     * Calculates every neighbour that fulfills a certain status.
+     * Either returns every feasible solution or every non-feasible solution
+     * @param sol
+     * @param stat
+     * @return
+     */
+    private ArrayList<Solution> flipNeighbours(Solution sol, Status stat) {
+    	ArrayList<Solution> list = new ArrayList<Solution>();
+    	
+    	for(int i = 0; i < sol.getSize(); i++) {
+    		flip(i, sol);
+    		if(sol.isFeasible()) {
+    			if(stat == Status.FEASIBLE) {
+    				list.add(new Solution(sol));
+    			}
+    		} else {
+    			if(stat == Status.NON_FEASIBLE) {
+    				list.add(new Solution(sol));
+    			}
+    		}
+    		flip(i, sol);
+    	}
+    	return list;
+    }
+    
+      
+    /**
      * Calculates all neighbours found by using API on Solution object.
      * @param sol starting Solution object
      * @return list containing all feasible neighbours
@@ -188,6 +301,21 @@ public class Solver implements SolverInterface {
     		api(i, sol);
     	}
     	return list;
+    }
+    
+    /**
+     * Compares Solution.getArray() of 2 Solution objects
+     * @param sol1
+     * @param sol2
+     * @return whether sol1 equals sol2
+     */
+    private boolean compareSolution(Solution sol1, Solution sol2 ) {
+    	for(int i = 0; i < sol1.getSize(); i++) {
+    		if(sol1.getArray()[i] != sol2.getArray()[i]) {
+    			return false;
+    		}
+    	}
+    	return true;
     }
     
     /**
@@ -300,5 +428,9 @@ public class Solver implements SolverInterface {
 		}
 
 		return solution;
+	}
+	
+	private enum Status {
+		FEASIBLE, NON_FEASIBLE
 	}
 }
