@@ -8,9 +8,8 @@ public class Solver implements SolverInterface {
         this.instance = instance;
 
 //        return method1();
-//        return method2();
+        return method2();
 //        return method3();
-        return null;
     }
 
     // Flip, Greedy, statisch, nach iterationen, position
@@ -60,6 +59,9 @@ public class Solver implements SolverInterface {
      * breaks when there are no neighbours available anymore.
      * jumps back to best value after @max_iterations iterations that don't yield
      * a higher valued solution
+     * 
+     * Tabulist is an int[] defined as follows:
+     * {position, valueOfSolution(position), valueOfSolution(position)}
      * @return feasible Solution with heuristic highest value
      */
     private Solution method2() {
@@ -69,16 +71,34 @@ public class Solver implements SolverInterface {
     	ArrayList<int[]> tabuList = new ArrayList<int[]>();
     	
     	Solution curr = findStartSolutionByRandom(instance);
+    	
     	Solution best = new Solution(curr);
     	ArrayList<Solution> legitNeighbours = legitApiNeighbours(curr);
     	
     	do {
     		Solution tmp = new Solution(instance);
-    		for(Solution s : legitNeighbours) {
-    			if(s.getValue() > tmp.getValue()) {
-    				tmp = new Solution(s);
+    		int indexer = 0;
+    		for(int i = 0; i < legitNeighbours.size(); i++) {
+    			if(legitNeighbours.get(i).isFeasible() &&
+    					tmp.getValue() < legitNeighbours.get(i).getValue()) {
+    				boolean bool = true;
+    				for(int[] tabu : tabuList) {
+    					if(tabu[0] == i && tabu[1] == curr.get(i) && tabu[2] == curr.get(i + 1)) {
+    						bool = false;
+    					}
+    				}
+    				if(bool) {
+    					indexer = i;
+    					tmp = new Solution(legitNeighbours.get(i));
+    				}		
     			}
     		}
+    		if(tmp.getValue() == 0) {
+    			break;
+    		}
+    		int[] e = {indexer, curr.get(indexer), curr.get(indexer + 1)};
+    		System.out.println(e[0] + " " + e[1] + " " + e[2]);
+    		tabuList.add(e);
     		curr = new Solution(tmp);
     		if(curr.getValue() > best.getValue()) {
     			iteration = 0;
@@ -86,12 +106,13 @@ public class Solver implements SolverInterface {
     		} else {
     			iteration++;
     			if(iteration > max_iterations) {
+    				iteration = 0;
     				curr = new Solution(best);
     			}
     		}
-    		
-    		legitNeighbours = legitApiNeighbours(curr);
-    	} while(!legitNeighbours.isEmpty());
+    		System.out.println("Iteration:" + iteration + " V:" + curr.getValue());
+    		legitNeighbours = new ArrayList<Solution>(legitApiNeighbours(curr));
+    	} while(true);
         return best;
 
 
@@ -109,7 +130,6 @@ public class Solver implements SolverInterface {
     
     /**
      * Calculates all neighbours found by using API on Solution object.
-     * Ignores neighbours that would create a conflict with tabulist
      * @param sol starting Solution object
      * @return list containing all feasible neighbours
      */
@@ -117,17 +137,11 @@ public class Solver implements SolverInterface {
     	ArrayList<Solution> list = new ArrayList<Solution>();
     	
     	for(int i = 0; i < sol.getSize() - 1; i++) {
-    		api(i, sol);
-    		if(sol.isFeasible()) {
-    			list.add(new Solution(sol));			
-    		}
+    		api(i, sol);    		
+    		list.add(new Solution(sol));
     		api(i, sol);
     	}
     	return list;
-    }
-    
-    private ArrayList<Solution> nonLegitApiNeighbours(Solution sol) {
-    	return null;
     }
 
     /**

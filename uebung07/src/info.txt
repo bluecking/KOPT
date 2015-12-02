@@ -39,7 +39,6 @@ Tabubedingung Position
 2)
 Api
 dynamische tabuliste
-<<<<<<< HEAD
 langzeitgedächtnis
 nach x nicht verbesserten lösungen
 position und werte
@@ -49,18 +48,3 @@ swap
 dynamische tabuliste
 nach x nicht verbesserten Lösungen
 langzeitgedächtnis
-
-
-
-=======
-nach x nicht verbesserten lösungen
-langzeitgedächtnis
-position und werte
-unzulässige Lösungen
-
-3)
-shift
-dynamische tabuliste
-nach x nicht verbesserten Lösungen
-langzeitgedächtnis
->>>>>>> 6680890582c0ac5dd9105893cac1177274dc944a
