@@ -1,15 +1,16 @@
 import java.util.*;
 
 public class Solver implements SolverInterface {
+	private final int max_iterations = 5;
 
-    Instance instance;
+    private Instance instance;
 
     public Solution solve(Instance instance) {
         this.instance = instance;
 
 //        return method1();
-        return method2();
-//        return method3();
+//        return method2();
+        return method3();
     }
 
     // Flip, Greedy, statisch, nach iterationen, position
@@ -65,8 +66,6 @@ public class Solver implements SolverInterface {
      * @return feasible Solution with heuristic highest value
      */
     private Solution method2() {
-
-    	final int max_iterations = 5;
     	int iteration = 0;
     	ArrayList<int[]> tabuList = new ArrayList<int[]>();
     	
@@ -117,15 +116,62 @@ public class Solver implements SolverInterface {
 
 
     }
-
-    private Solution method3(int iterations) {
-        Solution bestSolution = new Solution(instance);
-        int listSize;
-
-        for (int i = 0; i < iterations; i++) {
-
+    
+    /**
+     * Shift neighbourhood, random starting solution, dynamic tabulist, long term memory,
+     * Tabulist consists of only a Solution object whose value is checked against every 
+     * neighbour. -- note -- does skip different Solutions with same value.
+     * e.g. : 1 0 0 0 1 with Solution.value = 10
+     * 		  0 0 1 0 0 with Solution.value = 10
+     * might implement Solution comparison method to compare Solution objects
+     * @return
+     */
+    private Solution method3() {
+    	int iteration = 0;
+    	
+    	Solution curr = findStartSolutionByRandom(instance);
+        Solution best = new Solution(curr);
+        ArrayList<Solution> neighbours = new ArrayList<Solution>();
+        ArrayList<Solution> tabuList = new ArrayList<Solution>();
+        
+        while(true) {
+        	neighbours = new ArrayList<Solution>(shiftNeighbours(curr));
+        	Solution tmp = new Solution(instance);
+        	
+        	//Determines highest value neighbour
+        	for(Solution s : neighbours) {
+        		boolean existsInList = false;
+        		if(!tabuList.isEmpty()) {
+        			for(Solution tabu : tabuList) {
+        				if(s.getValue() == tabu.getValue()) {
+        					existsInList = true;
+        				}
+        			}
+        		}
+        		
+        		if(!existsInList && s.getValue() > tmp.getValue()) {
+        			tmp = new Solution(s);
+        		}
+        	}
+        	
+        	if(tmp.getValue() == 0) {
+        		break;
+        	}
+        	tabuList.add(new Solution(tmp));
+        	curr = new Solution(tmp);
+        	if(curr.getValue() > best.getValue()) {
+    			iteration = 0;
+    			best = new Solution(curr);
+    		} else {
+    			iteration++;
+    			if(iteration > max_iterations) {
+    				iteration = 0;
+    				curr = new Solution(best);
+    			}
+    		}
+        	
         }
-        return bestSolution;
+        return best;
     }
     
     /**
@@ -140,6 +186,29 @@ public class Solver implements SolverInterface {
     		api(i, sol);    		
     		list.add(new Solution(sol));
     		api(i, sol);
+    	}
+    	return list;
+    }
+    
+    /**
+     * Calculates every feasible neighbour found by using shift on a Solution object
+     * @param sol
+     * @return
+     */
+    private ArrayList<Solution> shiftNeighbours(Solution sol) {
+    	ArrayList<Solution> list = new ArrayList<Solution>();
+    	Solution tmp = new Solution(sol);
+    	
+    	for(int i = 0; i < sol.getSize(); i++) {
+    		for(int j = 0; j < sol.getSize(); j++) {
+    			if(i != j) {
+    				tmp = new Solution(sol);
+    				shift(i, j, tmp);
+    				if(tmp.isFeasible()) {
+    					list.add(new Solution(tmp));
+    				}
+    			}
+    		}
     	}
     	return list;
     }
