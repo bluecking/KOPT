@@ -8,10 +8,10 @@ public class Solver implements SolverInterface {
     public Solution solve(Instance instance) {
         this.instance = instance;
 
-//        return method1();
+        return method1(100, 100);
 //        return method2();
 //        return method3();
-        return method4();
+//       return method4();
     }
 
     // Flip, Greedy, statisch, nach iterationen, position
