@@ -1,0 +1,50 @@
+Nachbarschaften:
+Flip
+Api
+Swap
+Shift
+
+Startlösung:
+Leere Lösung
+Greedy Lösung
+Randomlösungping
+
+Tabuliste:
+statisch (feste Größe)
+dynamisch (Größe variabel)
+
+Abbruchbedingungen:
+nach Iterationen
+nach x nicht verbesserte Lösungen
+
+Tabubedingungen:
+Position
+Operation
+
+Position, Operation und Werte (2 Pairs)
+
+Zulässige Lösungen erlauben:
+Ja
+Nein
+
+======
+
+1)
+Flip
+statisch mit größe x
+Abbruch nach Iterationen
+Kurzzeitgedächtnis
+Tabubedingung Position
+
+2)
+Api
+dynamische tabuliste
+langzeitgedächtnis
+nach x nicht verbesserten lösungen
+position und werte
+
+3)
+swap
+dynamische tabuliste
+nach x nicht verbesserten Lösungen
+langzeitgedächtnis
